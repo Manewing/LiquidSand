@@ -31,6 +31,12 @@ class widget(object):
         return widget.__base_level + "." + name
 
     @staticmethod
+    def get_base_name(name):
+        if name == "" or name.rfind(".") == -1:
+            return name
+        return name[:name.rfind(".")]
+
+    @staticmethod
     def __add_base_level(level):
         if widget.__base_level == "":
             widget.__base_level = level
@@ -39,10 +45,7 @@ class widget(object):
 
     @staticmethod
     def __remove_base_level():
-        if widget.__base_level == "":
-            return
-        index = widget.__base_level.rfind(".")
-        widget.__base_level = widget.__base_level[:index]
+        widget.__base_level = widget.get_base_name(widget.__base_level)
 
     def __add_instance(self):
         if widget.__instances.get(self.name) != None:
