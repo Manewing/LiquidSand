@@ -1,0 +1,6 @@
+# ignore config files
+*.pyc
+*.json
+*.pyc
+*.xml
+*.swp
