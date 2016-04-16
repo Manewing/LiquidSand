@@ -15,7 +15,7 @@ class config_var(widget):
     def __init__(self, name, value):
         widget.__init__(self, name)
         self.__value = value
-        self.__hook = None
+        self.__hooks = list()
 
     #@brief get value
     #@return value of variable
@@ -38,34 +38,37 @@ class config_var(widget):
     #@param value - value to set
     @value.setter
     def value(self, value):
-        if self.__hook != None:
-            self.__hook()
         self.__value = value
+        for hook in self.__hooks:
+            hook()
 
-    #@brief get hook
+    #@brief add hooks
     #@return hook which is called on variable change
     @property
     def hook(self):
-        return self.__hook
+        return self.__hooks
 
     #brief set hook
     #@param hook - hook function to set
     @hook.setter
     def hook(self, hook):
-        self.__hook = hook
+        self.__hooks.append(hook)
 
 # @class configuration file reader
 # @brief reads in configuration file (JSON) and sets all
 #        configuration variables of its parent class,
 #        if the configuration file does not exist a new one is created
 #        by writing the default values of the configuration varibles to the file
+#        Filename = parent_name.json
 class config_file_reader(widget):
 
+    #< path for config files
+    config_path = "conf"
+
     #@brief constructor, reads in file
-    #@param filename - name of the configuration file
-    def __init__(self, filename):
+    def __init__(self):
         widget.__init__(self, "config_file_reader")
-        self.__filename = filename
+        self.__filename = config_file_reader.config_path + "/" + self.get_parent().name + ".json"
         self.__changed = False
         self.__read_file()
         atexit.register(self.exit)
@@ -119,6 +122,7 @@ class config_file_reader(widget):
 
     #@brief write values of config vars to file
     def __write_file(self):
+        config_file_reader.__check_path()
         obj = self.get_parent()
         config_vars = obj.find_subinstances(None,
                 lambda x: ( isinstance(x, config_var) ))
@@ -129,10 +133,27 @@ class config_file_reader(widget):
         with open(self.filename, "w") as f:
             json.dump(new_data, f)
 
+    #check if config path exists and create if if it does not
+    @staticmethod
+    def __check_path():
+        import os
+        if not os.path.exists(config_file_reader.config_path):
+            os.makedirs(config_file_reader.config_path)
+
     #@brief get filename
     #@return filename
     @property
     def filename(self):
         return self.__filename
 
+    #@brief debug function, prints config vars
+    def debug(self):
+        if widget.debug == True:
+            self.log_debug("reading config file:")
+            parent = self.get_parent()
+            config_vars = parent.find_subinstances(None,
+                lambda x: (isinstance(x, config_var)))
+            for key, cvar in config_vars.iteritems():
+                key = (lambda x: x if x.rfind(".") == -1 else x[x.rfind("."):])(key)
+                self.log_debug("   "+key+" = "+str(cvar.get()))
 
