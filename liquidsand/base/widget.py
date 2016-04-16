@@ -22,6 +22,9 @@ class widget(object):
     #< current base(name) level
     __base_level = ""
 
+    #< enable/disable debug log
+    debug = False
+
     #set meta class
     __metaclass__ = meta_widget
 
@@ -148,6 +151,12 @@ class widget(object):
     #@param prefix - prefix for log text
     def log(self, log, prefix=""):
         widget.log_static(log, prefix + self.name + ": ")
+
+    #@brief log a warning (widget name is logged)
+    #@param waring - warning text to log
+    def log_debug(self, warning):
+        if widget.debug == True:
+            self.log(warning, "DEBUG: ")
 
     #@brief log a warning (widget name is logged)
     #@param waring - warning text to log
