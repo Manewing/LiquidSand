@@ -2,6 +2,7 @@
 
 import inspect
 
+# provides hook to call finalize after __init__ of derived class
 class meta_widget(type):
     def __call__(cls, *args, **kwargs):
         obj = type.__call__(cls, *args, **kwargs)
@@ -50,9 +51,13 @@ class widget(object):
             return
         widget.__instances[self.name] = self
 
-    def log(self, log, prefix=""):
+    @staticmethod
+    def log_static(log, prefix=""):
         #TODO add log file
-        print(prefix + self.name + ": " + log)
+        print(prefix + log)
+
+    def log(self, log, prefix=""):
+        widget.log_static(log, prefix + self.name + ": ")
 
     def log_warning(self, warning):
         self.log(warning, "WARNING: ")
@@ -64,5 +69,9 @@ class widget(object):
     def name(self):
         return self.__name
 
+    @staticmethod
     def get(name):
-        return widget.__instances[name]
+        if widget.__instances.has_key(name) == True:
+            return widget.__instances[name]
+        widget.log_static(name + " does not exist", "ERROR: ")
+        return None
