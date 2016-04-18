@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import inspect
-
 #@class meta widget
 #@brief provides hook to call finalize after __init__ of derived class
 class meta_widget(type):

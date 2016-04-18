@@ -5,6 +5,7 @@ from widget import widget
 import json
 import atexit
 
+
 #@class configuration variable
 #@brief variable which is set through configuration file
 class config_var(widget):
@@ -89,6 +90,7 @@ class config_file_reader(widget):
         name = widget.get_base_name(self.name) + "." + name
         obj = widget.get(name)
         if obj == None:
+            self.log_warning("did not find : " + name)
             return
         if isinstance(obj, config_var):
             obj.value = value
@@ -149,7 +151,6 @@ class config_file_reader(widget):
     #@brief debug function, prints config vars
     def debug(self):
         if widget.debug == True:
-            self.log_debug("reading config file:")
             parent = self.get_parent()
             config_vars = parent.find_subinstances(None,
                 lambda x: (isinstance(x, config_var)))
@@ -157,3 +158,28 @@ class config_file_reader(widget):
                 key = (lambda x: x if x.rfind(".") == -1 else x[x.rfind("."):])(key)
                 self.log_debug("   "+key+" = "+str(cvar.get()))
 
+
+class config_utils:
+    @staticmethod
+    def to_sec(time_str, err_val=0):
+        factor = 1
+        if time_str.find("s") != -1:
+            time_str = time_str.replace("s","")
+        elif time_str.find("m") != -1:
+            time_str = time_str.replace("m","")
+            factor = 60
+        elif time_str.find("h") != -1:
+            time_str = time_str.replace("h","")
+            factor = 3600
+        elif time_str.find("d") != -1:
+            time_str = time_str.replace("d","")
+            factor = 3600 * 24
+        elif time_str.find("y") != -1:
+            time_str = time_str.replace("y","")
+            factor = 3600 * 24 * 365
+        value = err_val
+        try:
+            value = int(time_str) * factor
+        except ValueError:
+            widget.log_static("could not convert "+time_str+" to int", "WARNING: config_utils.to_sec: ")
+        return value
