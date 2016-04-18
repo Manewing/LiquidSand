@@ -20,8 +20,7 @@ class liquidsand(widget):
         self.debug.set(True)
 
         #config path
-        self.config_path = config_var("config_path", "../../conf")
-        self.config_path.hook = self.update_config_path
+        config_file_reader.config_path = "conf"
 
         cfr = config_file_reader()
         cfr.debug()
@@ -32,6 +31,3 @@ class liquidsand(widget):
 
     def update_debug(self):
         widget.debug = self.debug.get()
-
-    def update_config_path(self):
-        config_file_reader.config_path = self.config_path.get()
