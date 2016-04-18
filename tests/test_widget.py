@@ -3,6 +3,7 @@
 import sys
 sys.path.append("../liquidsand/base/")
 
+from timed_widget import timed_widget
 from widget import widget
 
 class deep(widget):
@@ -22,12 +23,17 @@ class test(widget):
         self.log("test")
         self.d = deep("deep")
 
-class system(widget):
+class system(timed_widget):
   def __init__(self, name):
-      widget.__init__(self, name)
+      timed_widget.__init__(self, name)
       self.t1 = test("test1")
       self.t2 = test("test2")
       self.d = deep("deep")
+      self.register_update(self.update, 1, "from system.__init__ timer")
+      self.start_update(self.update)
+
+  def update(self, caller):
+      self.log("update called " + caller)
 
 if __name__ == "__main__":
     sys = system("system")
