@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 
 import pyowm
-from time import time
-import threading
 
-import sys
-sys.path.append("liquidsand/base")
-
-from widget import widget
-from timed_widget import timed_widget
+from app import app
 from config import config_var, config_file_reader, config_utils as cu
 
-class WeatherApp(timed_widget):
+class WeatherApp(app):
 
     __instance = None
 
@@ -22,7 +16,7 @@ class WeatherApp(timed_widget):
         return WeatherApp.__instance
 
     def __init__(self, name="WeatherApp"):
-        timed_widget.__init__(self, name)
+        app.__init__(self, name)
 
         # weather api url
         self.api_url = config_var("api_url", "http://api.openweathermap.org")
@@ -33,6 +27,7 @@ class WeatherApp(timed_widget):
         self.cur_city = config_var("cur_city", "Aachen,de")
         self.user_key = config_var("user_key", "key")
         self.update_freq = config_var("upate_freq", "10m")
+        self.temp_unit = config_var("temp_unit", "celsius")
         self.update_freq.hook = self.update_freq_hook
 
         cfr = config_file_reader()
@@ -54,6 +49,9 @@ class WeatherApp(timed_widget):
         self.weather = self.observation.get_weather()
         self.log_debug(str(self.weather))
         self.log_debug(str(self.forecast))
+        self.log_debug("current temperature: "
+                + str(self.weather.get_temperature(self.temp_unit.get())["temp"])
+                + " " + self.temp_unit.get())
         self.log_debug("will be sunny in " + self.cur_city.get() + " tomorrow? "
                 + str(self.forecast.will_be_sunny_at(pyowm.timeutils.tomorrow())))
 

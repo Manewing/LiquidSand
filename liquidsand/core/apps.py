@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import sys
-sys.path.append("liquidsand/base/")
 sys.path.append("liquidsand/apps/")
 
 from widget import widget

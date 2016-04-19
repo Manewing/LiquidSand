@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-import sys
-sys.path.append("../liquidsand/base/")
-
 from widget import widget
 
 class gui(widget):

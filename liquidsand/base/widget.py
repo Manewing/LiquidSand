@@ -43,10 +43,10 @@ class widget(object):
     #@param cls   - class of widget to create
     #@param name  - name of new widget
     #@param *args - additional arguments
-    def add(self, cls, name, *args):
+    def add(self, cls, name, *args, **kwargs):
       base_level = widget.__base_level
       widget.__base_level = self.name
-      obj = cls(name, *args)
+      obj = cls(name, *args, **kwargs)
       setattr(self, name, obj)
       __base_level = base_level
 
